@@ -1,10 +1,8 @@
-const express = require('express')
-const app = express()
+const express = require('express');
+const app = express();
 
-
-
-app.get('/', (req, res)=>{
-    res.send(`
+app.get('/', (req, res) => {
+  res.send(`
     <html>
         <head>
         <script type="text/javascript">
@@ -21,21 +19,20 @@ app.get('/', (req, res)=>{
       </script>
         </head>
     </html>
-    `)
-})
+    `);
+});
 
+const { EventEmitter } = require('events');
+const clock = new EventEmitter();
+setInterval(() => {
+  const time = new Date().toLocaleString();
+  clock.emit('tick', time);
+}, 5000);
+clock.on('tick', time => console.log('The time is ', time));
+app.get('/the-time', (req, res) => {
+  clock.once('tick', time => res.send(time));
+});
 
-const { EventEmitter } =require('events')
-const clock = new EventEmitter()
-setInterval(()=> {
-    const time = (new Date()).toLocaleString()
-    clock.emit('tick', time)
-}, 5000)
-clock.on('tick', time => console.log('The time is ', time))
-app.get('/the-time', (req,res)=>{
-    clock.once('tick', time => res.send(time))
-})
-
-app.listen(3333, ()=>{
-    console.log('Listening on port 3333...')
-})
+app.listen(3333, () => {
+  console.log('Listening on port 3333...');
+});
